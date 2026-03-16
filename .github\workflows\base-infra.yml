@@ -1,0 +1,73 @@
+name: Base Infra
+
+on:
+  workflow_call:
+    inputs:
+      ENVIRONMENT:
+        required: true
+        type: string
+    secrets:
+      AZURE_CLIENT_ID:
+        required: true
+      AZURE_CLIENT_SECRET:
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        required: true
+      AZURE_TENANT_ID:
+        required: true
+      GH_TOKEN:
+        required: true
+
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    #environment: ${{ inputs.ENVIRONMENT }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Login Azure
+      uses: azure/login@v2
+      with:
+          auth-type: SERVICE_PRINCIPAL
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+    - uses: hashicorp/setup-terraform@v4
+
+    - name: Terraform Init Upgrade (${{ inputs.ENVIRONMENT }})
+      working-directory: infra
+      run: terraform init -upgrade
+
+    - name: Terraform Workspace (TaMarcado-${{ inputs.ENVIRONMENT }})
+      working-directory: infra
+      run: |
+        WORKSPACE="TaMarcado-${{ inputs.ENVIRONMENT }}"
+        terraform workspace select -or-create $WORKSPACE
+
+    - name: Terraform Validate (${{ inputs.ENVIRONMENT }})
+      working-directory: infra
+      run: terraform validate
+
+    - name: Terraform Plan (${{ inputs.ENVIRONMENT }})
+      working-directory: infra
+      run: terraform plan -out main.tfplan -var="project=TaMarcado" --var="env=${{ inputs.ENVIRONMENT }}"
+
+    - name: Terraform Apply (${{ inputs.ENVIRONMENT }})
+      id: tfapply
+      working-directory: infra
+      run: terraform apply -auto-approve -input=false main.tfplan
+
+    - name: Save GitHub secret (${{ inputs.ENVIRONMENT }})
+      run: |
+        echo "${{ steps.tfapply.outputs.landing_pg_deployment_token }}" | gh secret set LANDING_PG_DEPLOY_TOKEN_${{ inputs.ENVIRONMENT }}
+        echo "${{ steps.tfapply.outputs.blazor_web_deployment_token }}" | gh secret set BLAZOR_WEB_DEPLOY_TOKEN_${{ inputs.ENVIRONMENT }}
+        echo "${{ steps.tfapply.outputs.blazor_app_deployment_token }}" | gh secret set BLAZOR_APP_DEPLOY_TOKEN_${{ inputs.ENVIRONMENT }}
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
