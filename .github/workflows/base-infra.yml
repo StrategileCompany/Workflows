@@ -3,6 +3,9 @@ name: Base Infra
 on:
   workflow_call:
     inputs:
+      PROJECT:
+        required: true
+        type: string
       ENVIRONMENT:
         required: true
         type: string
@@ -45,10 +48,10 @@ jobs:
       working-directory: infra
       run: terraform init -upgrade
 
-    - name: Terraform Workspace (TaMarcado-${{ inputs.ENVIRONMENT }})
+    - name: Terraform Workspace (${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }})
       working-directory: infra
       run: |
-        WORKSPACE="TaMarcado-${{ inputs.ENVIRONMENT }}"
+        WORKSPACE="${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }}"
         terraform workspace select -or-create $WORKSPACE
 
     - name: Terraform Validate (${{ inputs.ENVIRONMENT }})
@@ -57,7 +60,7 @@ jobs:
 
     - name: Terraform Plan (${{ inputs.ENVIRONMENT }})
       working-directory: infra
-      run: terraform plan -out main.tfplan -var="project=TaMarcado" --var="env=${{ inputs.ENVIRONMENT }}"
+      run: terraform plan -out main.tfplan -var="project=${{ inputs.PROJECT }}" --var="env=${{ inputs.ENVIRONMENT }}"
 
     - name: Terraform Apply (${{ inputs.ENVIRONMENT }})
       id: tfapply
