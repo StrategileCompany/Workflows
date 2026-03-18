@@ -45,7 +45,7 @@ locals {
   prefix            = "${local.project}-${local.env}"
   resource_group    = "RG-${local.prefix}"
   landing_page      = "${local.prefix}-landing"
-  blazor_webapp     = "${local.prefix}-web-app"
+  blazor_webapp     = "${local.prefix}-webapp"
   storage_account   = lower(replace(local.prefix, "-", ""))
   storage_container = lower(local.prefix)
   log_analytics     = "${local.prefix}"
@@ -79,6 +79,13 @@ resource "azurerm_static_web_app" "blazor_webapp" {
   location                   = local.location2
   sku_tier                   = "Free"
   sku_size                   = "Free"
+  repository_branch          = "main"
+
+  lifecycle {
+    ignore_changes = [
+      repository_url
+    ]
+  }
 }
 
 
