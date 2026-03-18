@@ -76,8 +76,9 @@ jobs:
     
     - name: Save GitHub secret (${{ inputs.ENVIRONMENT }})
       run: |
+        echo "${{ steps.tfapply.outputs.landing_page_deployment_token }}"  /   "${{ steps.tfapply.outputs.blazor_webapp_deployment_token }}"
         gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --body "${{ steps.tfapply.outputs.landing_page_deployment_token }}"  --repo ${{ github.repository }}
-        gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --body "${{ steps.tfapply.outputs.blazor_webapp_deployment_token }}" --repo ${{ github.repository }}
+        gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --body ${{ steps.tfapply.outputs.blazor_webapp_deployment_token }} --repo ${{ github.repository }}
         gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --body "    steps.tfapply.outputs.azure_function_deployment_token  " --repo ${{ github.repository }}
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
