@@ -22,12 +22,6 @@ on:
         required: true
 
 
-env:
-  SECRET1: SECRET1
-  SECRET2: SECRET2
-  SECRET3: SECRET3
-
-
 jobs:
   terraform:
     runs-on: ubuntu-latest
@@ -76,20 +70,16 @@ jobs:
       working-directory: infra
       run: terraform apply -auto-approve -input=false main.tfplan
 
-    - name: Terraform Outputs (${{ inputs.ENVIRONMENT }})
-      id: tfout
+    - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }}) from Terraform Outputs (${{ inputs.ENVIRONMENT }})
       working-directory: infra
       run: |
-        SECRET1=$(terraform output -raw landing_page_deployment_token) >> $GITHUB_ENV
-        SECRET2=$(terraform output -raw blazor_webapp_deployment_token) >> $GITHUB_ENV
-        SECRET3="ValorPadrao" >> $GITHUB_ENV
-  
-    - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }})
-      run: |
+        SECRET_NAME="${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN"
+        SECRET1=$(terraform output -raw landing_page_deployment_token)
+        SECRET2=$(terraform output -raw blazor_webapp_deployment_token)
+        SECRET3="ValorPadrao"
+
         gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET1
         gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --repo ${{ github.repository }} --body $SECRET2
-        
-        SECRET_NAME="${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN"
 
         if gh secret list --limit 1000 | awk '{print $1}' | grep -Fxq "$SECRET_NAME"; then
           echo "Secret $SECRET_NAME já existe. Nada a fazer 👍"
