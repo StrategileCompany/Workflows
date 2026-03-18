@@ -69,12 +69,15 @@ jobs:
     - name: Terraform Apply (${{ inputs.ENVIRONMENT }})
       id: tfapply
       working-directory: infra
-      run: terraform apply -auto-approve -input=false main.tfplan
-
+      run: |
+        terraform apply -auto-approve -input=false main.tfplan
+        echo "landing_page_deployment_token=$(terraform output -raw landing_page_deployment_token)" >> $GITHUB_OUTPUT
+        echo "blazor_webapp_deployment_token=$(terraform output -raw blazor_webapp_deployment_token)" >> $GITHUB_OUTPUT
+    
     - name: Save GitHub secret (${{ inputs.ENVIRONMENT }})
       run: |
         echo "${{ steps.tfapply.outputs.landing_page_deployment_token }}"  | gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN
         echo "${{ steps.tfapply.outputs.blazor_webapp_deployment_token }}" | gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN
-        echo "${{ steps.tfapply.outputs.azfunc_api_deployment_token }}"    | gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN
+        echo "$ { { steps.tfapply.outputs.azfunc_api_deployment_token } }" | gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
