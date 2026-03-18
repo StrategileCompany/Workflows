@@ -22,6 +22,9 @@ on:
       DOTNET_VERSION:
         required: true
         type: string
+      AZURE_FUNCTIONAPP_SKU:
+        type: string
+        default: "flexconsumption"
     secrets:
       PUBLISH_PROFILE:
         required: true
@@ -51,10 +54,9 @@ jobs:
 
       - name: Deploy to Azure Function App ${{ inputs.AZURE_FUNCTIONAPP_NAME }} @ ${{ inputs.AZURE_FUNCTIONAPP_SLOT }} from ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
         uses: Azure/functions-action@v1
-        id: fa
         with:
           app-name: ${{ inputs.AZURE_FUNCTIONAPP_NAME }}
           slot-name: ${{ inputs.AZURE_FUNCTIONAPP_SLOT }}
           package: ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
+          sku: ${{ inputs.AZURE_FUNCTIONAPP_SKU }}
           publish-profile: ${{ secrets.PUBLISH_PROFILE }}          
-          sku: 'flexconsumption'
