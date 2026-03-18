@@ -157,6 +157,12 @@ resource "azurerm_function_app_flex_consumption" "main" {
     "WEBSITE_RUN_FROM_PACKAGE"              = "1"
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.main.connection_string
   }
+
+  lifecycle {
+    ignore_changes = [
+      app_settings["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+    ]
+  }
 }
 
 
