@@ -46,9 +46,6 @@ jobs:
         repository: Strategile/workflows
         path: ./
 
-    - name: Debug files
-      run: ls -R
-  
     - uses: hashicorp/setup-terraform@v4
 
     - name: Terraform Init Upgrade (${{ inputs.ENVIRONMENT }})
