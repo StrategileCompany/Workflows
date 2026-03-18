@@ -74,13 +74,13 @@ jobs:
       working-directory: infra
       run: |
         SECRET_NAME1="${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN"
-        SECRET_VALUE1="$(terraform output -raw landing_page_deployment_token)"
+        SECRET_VALUE1=$(terraform output -raw landing_page_deployment_token)
 
         SECRET_NAME2="${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN"
-        SECRET_VALUE2="$(terraform output -raw blazor_webapp_deployment_token)"
+        SECRET_VALUE2=$(terraform output -raw blazor_webapp_deployment_token)
 
         SECRET_NAME3="${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN"
-        SECRET_VALUE3="Secret precisa ser configurado manualmente para consumo flex"
+        SECRET_VALUE3="SecretPrecisaSerConfiguradoManualmenteParaConsumoFlex"
 
         gh secret set $SECRET_NAME1 --repo ${{ github.repository }} --body $SECRET_VALUE1
         gh secret set $SECRET_NAME2 --repo ${{ github.repository }} --body $SECRET_VALUE2
