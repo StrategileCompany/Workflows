@@ -176,6 +176,6 @@ output "landing_page_deployment_token" {
 
 output "blazor_webapp_deployment_token" {
   value     = azurerm_static_web_app.blazor_webapp.api_key
-  sensitive = false
+  sensitive = true
 }
 
