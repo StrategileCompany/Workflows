@@ -28,12 +28,6 @@ jobs:
     #environment: ${{ inputs.ENVIRONMENT }}
 
     steps:
-    - name: Checkout Terraform repo
-      uses: actions/checkout@v4
-      with:
-        repository: Strategile/workflows
-        path: infra
-
     - name: Login Azure
       uses: azure/login@v2
       with:
@@ -46,6 +40,15 @@ jobs:
               "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
             }
 
+    - name: Checkout Terraform repo
+      uses: actions/checkout@v4
+      with:
+        repository: Strategile/workflows
+        path: infra
+
+    - name: Debug files
+      run: ls -R
+  
     - uses: hashicorp/setup-terraform@v4
 
     - name: Terraform Init Upgrade (${{ inputs.ENVIRONMENT }})
