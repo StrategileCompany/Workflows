@@ -83,12 +83,21 @@ jobs:
       run: |
         gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET1
         gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --repo ${{ github.repository }} --body $SECRET2
-        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET3
+        
+        SECRET_NAME="${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN"
+        $SECRET3="valor_padrao_aqui"
+        
+        if gh secret list --limit 1000 | awk '{print $1}' | grep -Fxq "$SECRET_NAME"; then
+          echo "Secret $SECRET_NAME já existe. Nada a fazer 👍"
+        else
+          echo "Criando secret $SECRET_NAME..."
+          gh secret set $SECRET_NAME --repo ${{ github.repository }} --body $SECRET3
+        fi
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         SECRET1: ${{ steps.tfout.outputs.SECRET_landing_page_deployment_token }}
         SECRET2: ${{ steps.tfout.outputs.SECRET_blazor_webapp_deployment_token }}
-        SECRET3: ${{ steps.tfout.outputs.SECRET_blazor_webapp_deployment_token }}
+
 
   
 
