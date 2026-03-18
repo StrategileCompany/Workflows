@@ -76,8 +76,8 @@ jobs:
     
     - name: Save GitHub secret (${{ inputs.ENVIRONMENT }})
       run: |
-        gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body ${{ steps.tfapply.outputs.landing_page_deployment_token }}
+        gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body ::add-mask::${{ steps.tfapply.outputs.landing_page_deployment_token }}
         gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --repo ${{ github.repository }} --body ${{ steps.tfapply.outputs.blazor_webapp_deployment_token }}
-        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $(terraform output -raw blazor_webapp_deployment_token)
+        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body "::add-mask::${{ steps.tfapply.outputs.blazor_webapp_deployment_token }}"
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
