@@ -85,7 +85,7 @@ jobs:
         gh secret set $SECRET_NAME1 --repo ${{ github.repository }} --body $SECRET_VALUE1
         gh secret set $SECRET_NAME2 --repo ${{ github.repository }} --body $SECRET_VALUE2
 
-        if gh secret list | awk '{print $1}' | grep -Fxq "$SECRET_NAME3"; then
+        if gh secret list --repo ${{ github.repository }} | awk '{print $1}' | grep -Fxq "$SECRET_NAME3"; then
           echo "Secret $SECRET_NAME3 já existe. Nada a fazer 👍"
         else
           echo "Criando secret $SECRET_NAME3..."
