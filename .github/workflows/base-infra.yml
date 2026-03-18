@@ -71,33 +71,22 @@ jobs:
       run: terraform apply -auto-approve -input=false main.tfplan
 
     - name: Terraform Outputs (${{ inputs.ENVIRONMENT }})
+      id: tfout
       working-directory: infra
       run: |
         V1=$(terraform output -raw landing_page_deployment_token)
         V2=$(terraform output -raw blazor_webapp_deployment_token)
-        echo "landing_page_deployment_token=$V1" >> $GITHUB_OUTPUT
-        echo "blazor_webapp_deployment_token=$V2" >> $GITHUB_OUTPUT
+        echo "SECRET_landing_page_deployment_token=$V1" >> $GITHUB_OUTPUT
+        echo "SECRET_blazor_webapp_deployment_token=$V2" >> $GITHUB_OUTPUT
     
-#    - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }})
-#      run: |
-#        gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET_VALUE1
-#        gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --repo ${{ github.repository }} --body $SECRET_VALUE2
-#        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body "SECRET_VALUE"
-#      env:
-#        GH_TOKEN: ${{ secrets.GH_TOKEN }}
-#        SECRET_VALUE1: ${{ steps.tfapply.outputs.landing_page_deployment_token }}
-#        SECRET_VALUE2: ${{ steps.tfapply.outputs.blazor_webapp_deployment_token }}
+    - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }})
+      run: |
+        gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET1
+        gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --repo ${{ github.repository }} --body $SECRET2
+        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body "SECRET"
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        SECRET1: ${{ steps.tfout.outputs.SECRET_landing_page_deployment_token }}
+        SECRET2: ${{ steps.tfout.outputs.SECRET_blazor_webapp_deployment_token }}
 
-  Save-GitHub-Secrets:
-    needs: [terraform]
-    name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }})
-    uses: ./.github/workflows/base-github-save-secrets.yml
-    with:
-      NAME1: ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN
-      NAME2: ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN
-      NAME3: ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN
-    secrets:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
-      VALUE1: ${{ needs.terraform.outputs.landing_page_deployment_token }}
-      VALUE2: ${{ needs.terraform.outputs.blazor_webapp_deployment_token }}
-      VALUE3: "Secret"
+  
