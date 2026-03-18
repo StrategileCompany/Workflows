@@ -74,10 +74,10 @@ jobs:
       id: tfout
       working-directory: infra
       run: |
-        V1=$(terraform output -raw landing_page_deployment_token)
-        V2=$(terraform output -raw blazor_webapp_deployment_token)
-        echo "SECRET_landing_page_deployment_token=$V1" >> $GITHUB_OUTPUT
-        echo "SECRET_blazor_webapp_deployment_token=$V2" >> $GITHUB_OUTPUT
+        SECRET_V1=$(terraform output -raw landing_page_deployment_token)
+        SECRET_V2=$(terraform output -raw blazor_webapp_deployment_token)
+        echo "SECRET_landing_page_deployment_token=$SECRET_V1" >> $GITHUB_OUTPUT
+        echo "SECRET_blazor_webapp_deployment_token=$SECRET_V2" >> $GITHUB_OUTPUT
     
     - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }})
       run: |
