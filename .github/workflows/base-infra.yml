@@ -88,5 +88,6 @@ jobs:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         SECRET1: ${{ steps.tfout.outputs.SECRET_landing_page_deployment_token }}
         SECRET2: ${{ steps.tfout.outputs.SECRET_blazor_webapp_deployment_token }}
+        SECRET3: ::add-mask::${{ steps.tfout.outputs.SECRET_blazor_webapp_deployment_token }}
 
   
