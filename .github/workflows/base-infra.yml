@@ -44,7 +44,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: Strategile/workflows
-        path: infra
+        path: ./
 
     - name: Debug files
       run: ls -R
