@@ -69,6 +69,13 @@ resource "azurerm_static_web_app" "landing_page" {
   location                   = local.location2
   sku_tier                   = "Free"
   sku_size                   = "Free"
+
+  lifecycle {
+    ignore_changes = [
+      repository_branch,
+      repository_url
+    ]
+  }
 }
 
 
