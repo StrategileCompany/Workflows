@@ -83,7 +83,7 @@ jobs:
       run: |
         gh secret set ${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET1
         gh secret set ${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN --repo ${{ github.repository }} --body $SECRET2
-        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body "SECRET"
+        gh secret set ${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN  --repo ${{ github.repository }} --body $SECRET3
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         SECRET1: ${{ steps.tfout.outputs.SECRET_landing_page_deployment_token }}
