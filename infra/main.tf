@@ -33,16 +33,31 @@ variable "env" {
 }
 
 variable "SecurityInfo_AppGuid" {
+  sensitive   = true
   type        = string
   description = "SecurityInfo_AppGuid"
 }
 
 variable "SecurityInfo_AuthKey" {
+  sensitive   = true
   type        = string
   description = "SecurityInfo_AuthKey"
 }
 
+variable "SecurityInfo_Refresh" {
+  type        = string
+  default     = "00:30:00"
+  description = "SecurityInfo_Refresh"
+}
+
+variable "SecurityInfo_TimeOut" {
+  type        = string
+  default     = "00:30:00"
+  description = "SecurityInfo_TimeOut"
+}
+
 variable "DefaultConnectionString" {
+  sensitive   = true
   type        = string
   description = "DefaultConnectionString"
 }
@@ -185,8 +200,8 @@ resource "azurerm_function_app_flex_consumption" "main" {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.main.connection_string
     "SecurityInfo_AppGuid" = var.SecurityInfo_AppGuid
     "SecurityInfo_AuthKey" = var.SecurityInfo_AuthKey
-    "SecurityInfo_Refresh" = "00:30:00"
-    "SecurityInfo_TimeOut" = "00:30:00"
+    "SecurityInfo_Refresh" = var.SecurityInfo_Refresh
+    "SecurityInfo_TimeOut" = var.SecurityInfo_TimeOut
   }
 
   connection_string {
