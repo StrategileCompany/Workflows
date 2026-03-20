@@ -18,6 +18,12 @@ on:
         required: true
       AZURE_TENANT_ID:
         required: true
+      INFRA_SECURITYINFO_APPGUID:
+        required: true
+      INFRA_SECURITYINFO_AUTHKEY:
+        required: true
+      INFRA_DEFAULT_CONNECTION_STRING:
+        required: true
       GH_TOKEN:
         required: true
 
@@ -54,9 +60,9 @@ jobs:
 
     - name: Terraform Workspace (${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }})
       working-directory: infra
-      run: |
-        WORKSPACE="${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }}"
-        terraform workspace select -or-create $WORKSPACE
+      run: terraform workspace select -or-create $WORKSPACE
+      env:
+         WORKSPACE: "${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }}"
 
     - name: Terraform Validate (${{ inputs.ENVIRONMENT }})
       working-directory: infra
@@ -64,11 +70,23 @@ jobs:
 
     - name: Terraform Plan (${{ inputs.ENVIRONMENT }})
       working-directory: infra
-      run: terraform plan -out main.tfplan -var="project=${{ inputs.PROJECT }}" --var="env=${{ inputs.ENVIRONMENT }}"
+      run: terraform plan -out main.tfplan
+      env:
+        TF_VAR_project: ${{ inputs.PROJECT }}
+        TF_VAR_env: ${{ inputs.ENVIRONMENT }}
+        TF_VAR_SecurityInfo_AppGuid: ${{ secrets.INFRA_SECURITYINFO_APPGUID }}
+        TF_VAR_SecurityInfo_AuthKey: ${{ secrets.INFRA_SECURITYINFO_AUTHKEY }}
+        TF_VAR_DefaultConnectionString: ${{ secrets.INFRA_DEFAULT_CONNECTION_STRING }}
 
     - name: Terraform Apply (${{ inputs.ENVIRONMENT }})
       working-directory: infra
       run: terraform apply -auto-approve -input=false main.tfplan
+      env:
+        TF_VAR_project: ${{ inputs.PROJECT }}
+        TF_VAR_env: ${{ inputs.ENVIRONMENT }}
+        TF_VAR_SecurityInfo_AppGuid: ${{ secrets.SECURITYINFO_APPGUID }}
+        TF_VAR_SecurityInfo_AuthKey: ${{ secrets.SECURITYINFO_AUTHKEY }}
+        TF_VAR_DefaultConnectionString: ${{ secrets.DEFAULT_CONNECTION_STRING }}
 
     - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }}) from Terraform Outputs (${{ inputs.ENVIRONMENT }})
       working-directory: infra
