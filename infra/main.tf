@@ -212,7 +212,8 @@ resource "azurerm_function_app_flex_consumption" "main" {
 
   lifecycle {
     ignore_changes = [
-      app_settings["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+      app_settings["APPLICATIONINSIGHTS_CONNECTION_STRING"],
+      tags
     ]
   }
 }
