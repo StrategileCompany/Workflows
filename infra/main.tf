@@ -32,34 +32,22 @@ variable "env" {
   description = "Ambiente (HMG ou PRD)"
 }
 
-variable "SecurityInfo_AppGuid" {
+variable "ConnectionStringType" {
+  type        = string
+  description = "Default Connection String Type"
+  default     = "SQLServer"
+}
+
+variable "ConnectionStringName" {
+  type        = string
+  description = "Default Connection String Name"
+  default     = "Default"
+}
+
+variable "ConnectionStringValue" {
+  type        = string
+  description = "Default Connection String Value"
   sensitive   = true
-  type        = string
-  description = "SecurityInfo_AppGuid"
-}
-
-variable "SecurityInfo_AuthKey" {
-  sensitive   = true
-  type        = string
-  description = "SecurityInfo_AuthKey"
-}
-
-variable "SecurityInfo_Refresh" {
-  type        = string
-  default     = "00:30:00"
-  description = "SecurityInfo_Refresh"
-}
-
-variable "SecurityInfo_TimeOut" {
-  type        = string
-  default     = "00:30:00"
-  description = "SecurityInfo_TimeOut"
-}
-
-variable "DefaultConnectionString" {
-  sensitive   = true
-  type        = string
-  description = "DefaultConnectionString"
 }
 
 
@@ -198,16 +186,12 @@ resource "azurerm_function_app_flex_consumption" "main" {
 
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.main.connection_string
-    "SecurityInfo_AppGuid" = var.SecurityInfo_AppGuid
-    "SecurityInfo_AuthKey" = var.SecurityInfo_AuthKey
-    "SecurityInfo_Refresh" = var.SecurityInfo_Refresh
-    "SecurityInfo_TimeOut" = var.SecurityInfo_TimeOut
   }
 
   connection_string {
-    type  = "SQLServer"
-    name  = "Default"
-    value = var.DefaultConnectionString
+    type  = var.ConnectionStringType
+    name  = var.ConnectionStringName
+    value = var.ConnectionStringValue
   }
 
   lifecycle {
