@@ -99,14 +99,6 @@ resource "azurerm_static_web_app" "landing_page" {
 
 
 
-resource "azurerm_static_web_app_custom_domain" "lp" {
-  static_web_app_id          = azurerm_static_web_app.landing_page.id
-  domain_name                = local.lp_custom_domain
-  validation_type            = "cname-delegation"
-}
-
-
-
 resource "azurerm_static_web_app" "blazor_webapp" {
   name                       = local.blazor_webapp
   resource_group_name        = azurerm_resource_group.main.name
@@ -124,11 +116,19 @@ resource "azurerm_static_web_app" "blazor_webapp" {
 
 
 
-resource "azurerm_static_web_app_custom_domain" "app" {
-  static_web_app_id          = azurerm_static_web_app.blazor_webapp.id
-  domain_name                = local.app_custom_domain
-  validation_type            = "cname-delegation"
-}
+#resource "azurerm_static_web_app_custom_domain" "lp" {
+#  static_web_app_id          = azurerm_static_web_app.landing_page.id
+#  domain_name                = local.lp_custom_domain
+#  validation_type            = "cname-delegation"
+#}
+
+
+
+#resource "azurerm_static_web_app_custom_domain" "app" {
+#  static_web_app_id          = azurerm_static_web_app.blazor_webapp.id
+#  domain_name                = local.app_custom_domain
+#  validation_type            = "cname-delegation"
+#}
 
 
 
