@@ -100,7 +100,7 @@ resource "azurerm_static_web_app" "landing_page" {
 
 
 resource "azurerm_static_web_app_custom_domain" "lp" {
-  static_site_id             = azurerm_static_web_app.landing_page.id
+  static_web_app_id          = azurerm_static_web_app.landing_page.id
   domain_name                = local.lp_custom_domain
   validation_type            = "cname-delegation"
 }
@@ -125,7 +125,7 @@ resource "azurerm_static_web_app" "blazor_webapp" {
 
 
 resource "azurerm_static_web_app_custom_domain" "app" {
-  static_site_id             = azurerm_static_web_app.blazor_webapp.id
+  static_web_app_id          = azurerm_static_web_app.blazor_webapp.id
   domain_name                = local.app_custom_domain
   validation_type            = "cname-delegation"
 }
