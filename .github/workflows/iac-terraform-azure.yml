@@ -33,7 +33,6 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
-    #environment: ${{ inputs.ENVIRONMENT }}
 
     steps:
     - name: Login Azure
