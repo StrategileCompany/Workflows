@@ -69,7 +69,8 @@ locals {
   app_insights      = "${local.prefix}"
   service_plan      = "${local.prefix}"
   function_app      = "${local.prefix}"
-  custom_domain     = "app-${lower(local.env)}.${lower(local.prefix)}.com.br"
+  lp_custom_domain  = var.env == "HMG" ? "lp-hmg.${lower(local.prefix)}.com.br" : "${lower(local.prefix)}.com.br"
+  app_custom_domain = var.env == "HMG" ? "app-hmg.${lower(local.prefix)}.com.br" : "app.${lower(local.prefix)}.com.br"
 }
 
 
@@ -98,6 +99,14 @@ resource "azurerm_static_web_app" "landing_page" {
 
 
 
+resource "azurerm_static_web_app_custom_domain" "lp" {
+  static_site_id             = azurerm_static_web_app.landing_page.id
+  domain_name                = local.lp_custom_domain
+  validation_type            = "cname-delegation"
+}
+
+
+
 resource "azurerm_static_web_app" "blazor_webapp" {
   name                       = local.blazor_webapp
   resource_group_name        = azurerm_resource_group.main.name
@@ -115,9 +124,9 @@ resource "azurerm_static_web_app" "blazor_webapp" {
 
 
 
-resource "azurerm_static_site_custom_domain" "example" {
+resource "azurerm_static_web_app_custom_domain" "app" {
   static_site_id             = azurerm_static_web_app.blazor_webapp.id
-  domain_name                = local.custom_domain
+  domain_name                = local.app_custom_domain
   validation_type            = "cname-delegation"
 }
 
