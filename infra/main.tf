@@ -117,7 +117,7 @@ resource "azurerm_static_web_app" "blazor_webapp" {
 
 resource "azurerm_static_site_custom_domain" "example" {
   static_site_id             = azurerm_static_web_app.blazor_webapp.id
-  domain_name                = ${local.custom_domain}
+  domain_name                = local.custom_domain
   validation_type            = "cname-delegation"
 }
 
