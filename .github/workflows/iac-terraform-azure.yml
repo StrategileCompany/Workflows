@@ -6,7 +6,13 @@ on:
       PROJECT:
         required: true
         type: string
-      ENVIRONMENT:
+      ENV:
+        required: true
+        type: string
+      INFRA_CONNECTION_STRING_TYPE:
+        required: true
+        type: string
+      INFRA_CONNECTION_STRING_NAME:
         required: true
         type: string
     secrets:
@@ -18,11 +24,7 @@ on:
         required: true
       AZURE_TENANT_ID:
         required: true
-      INFRA_SECURITYINFO_APPGUID:
-        required: true
-      INFRA_SECURITYINFO_AUTHKEY:
-        required: true
-      INFRA_DEFAULT_CONNECTION_STRING:
+      INFRA_CONNECTION_STRING_VALUE:
         required: true
       GH_TOKEN:
         required: true
@@ -54,50 +56,44 @@ jobs:
 
     - uses: hashicorp/setup-terraform@v4
 
-    - name: Terraform Init Upgrade (${{ inputs.ENVIRONMENT }})
+    - name: Terraform Init Upgrade (${{ inputs.ENV }})
       working-directory: infra
       run: terraform init -upgrade
 
-    - name: Terraform Workspace (${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }})
+    - name: Terraform Workspace (${{ inputs.PROJECT }}-${{ inputs.ENV }})
       working-directory: infra
       run: terraform workspace select -or-create $WORKSPACE
       env:
-         WORKSPACE: "${{ inputs.PROJECT }}-${{ inputs.ENVIRONMENT }}"
+         WORKSPACE: "${{ inputs.PROJECT }}-${{ inputs.ENV }}"
 
-    - name: Terraform Validate (${{ inputs.ENVIRONMENT }})
+    - name: Terraform Validate (${{ inputs.ENV }})
       working-directory: infra
       run: terraform validate
 
-    - name: Terraform Plan (${{ inputs.ENVIRONMENT }})
+    - name: Terraform Plan (${{ inputs.ENV }})
       working-directory: infra
       run: terraform plan -out main.tfplan
       env:
         TF_VAR_project: ${{ inputs.PROJECT }}
-        TF_VAR_env: ${{ inputs.ENVIRONMENT }}
-        TF_VAR_SecurityInfo_AppGuid: ${{ secrets.INFRA_SECURITYINFO_APPGUID }}
-        TF_VAR_SecurityInfo_AuthKey: ${{ secrets.INFRA_SECURITYINFO_AUTHKEY }}
-        TF_VAR_DefaultConnectionString: ${{ secrets.INFRA_DEFAULT_CONNECTION_STRING }}
+        TF_VAR_env: ${{ inputs.ENV }}
+        TF_VAR_ConnectionStringType: ${{ inputs.INFRA_CONNECTION_STRING_TYPE }}
+        TF_VAR_ConnectionStringName: ${{ inputs.INFRA_CONNECTION_STRING_NAME }}
+        TF_VAR_ConnectionStringValue: ${{ secrets.INFRA_CONNECTION_STRING_VALUE }}
 
-    - name: Terraform Apply (${{ inputs.ENVIRONMENT }})
+    - name: Terraform Apply (${{ inputs.ENV }})
       working-directory: infra
       run: terraform apply -auto-approve -input=false main.tfplan
-#      env:
-#        TF_VAR_project: ${{ inputs.PROJECT }}
-#        TF_VAR_env: ${{ inputs.ENVIRONMENT }}
-#        TF_VAR_SecurityInfo_AppGuid: ${{ secrets.SECURITYINFO_APPGUID }}
-#        TF_VAR_SecurityInfo_AuthKey: ${{ secrets.SECURITYINFO_AUTHKEY }}
-#        TF_VAR_DefaultConnectionString: ${{ secrets.DEFAULT_CONNECTION_STRING }}
 
-    - name: Save GitHub Secrets (${{ inputs.ENVIRONMENT }}) from Terraform Outputs (${{ inputs.ENVIRONMENT }})
+    - name: Save GitHub Secrets (${{ inputs.ENV }}) from Terraform Outputs (${{ inputs.ENV }})
       working-directory: infra
       run: |
-        SECRET_NAME1="${{ inputs.ENVIRONMENT }}_LANDING_PAGE_DEPLOY_TOKEN"
+        SECRET_NAME1="${{ inputs.ENV }}_LANDING_PAGE_DEPLOY_TOKEN"
         SECRET_VALUE1=$(terraform output -raw landing_page_deployment_token)
 
-        SECRET_NAME2="${{ inputs.ENVIRONMENT }}_BLAZOR_WEBAPP_DEPLOY_TOKEN"
+        SECRET_NAME2="${{ inputs.ENV }}_BLAZOR_WEBAPP_DEPLOY_TOKEN"
         SECRET_VALUE2=$(terraform output -raw blazor_webapp_deployment_token)
 
-        SECRET_NAME3="${{ inputs.ENVIRONMENT }}_FUNCTION_API_DEPLOY_TOKEN"
+        SECRET_NAME3="${{ inputs.ENV }}_FUNCTION_API_DEPLOY_TOKEN"
         SECRET_VALUE3="SecretPrecisaSerConfiguradoManualmenteParaConsumoFlex"
 
         gh secret set $SECRET_NAME1 --repo ${{ github.repository }} --body $SECRET_VALUE1
