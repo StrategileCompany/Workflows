@@ -46,7 +46,7 @@ jobs:
       RESOURCE_NAME: "${{ inputs.Project }}-${{ inputs.AppEnv }}"
     
     steps:
-      - name: Checkout GitHub Action
+      - name: Checkout GitHub Action v6
         uses: actions/checkout@v6
         with:
           submodules: true
