@@ -222,15 +222,3 @@ resource "azurerm_function_app_flex_consumption" "main" {
 
 
 
-output "landing_page_deployment_token" {
-  value     = azurerm_static_web_app.landing_page.api_key
-  sensitive = true
-}
-
-
-
-output "blazor_webapp_deployment_token" {
-  value     = azurerm_static_web_app.blazor_webapp.api_key
-  sensitive = true
-}
-
