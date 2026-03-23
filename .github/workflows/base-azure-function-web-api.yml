@@ -19,15 +19,15 @@ on:
       DotNetVersion:
         required: false
         type: string
-        default: '10.0.x'
+        default: "10.0.x"
       Configuration:
         required: false
         type: string
-        default: "Release"
+        default: Release
       FunctionSlot:
         required: false
         type: string
-        default: "Production"
+        default: Production
       FunctionSku:
         required: false
         type: string
@@ -60,7 +60,7 @@ jobs:
         run: dotnet restore "${{ inputs.RootPath }}"
 
       - name: Build And Publish ${{ inputs.RootPath }} / ${{ inputs.Configuration }} in ${{ inputs.OutPath }}
-        run: dotnet build "${{ inputs.RootPath }}" --Configuration ${{ inputs.Configuration }} --output ${{ inputs.OutPath }}
+        run: dotnet build "${{ inputs.RootPath }}" --configuration "${{ inputs.Configuration }}" --output "${{ inputs.OutPath }}"
 
       - name: Azure Login
         uses: azure/login@v2
