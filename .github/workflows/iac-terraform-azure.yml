@@ -29,19 +29,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout GitHub Action v6
+      uses: actions/checkout@v6
+      with:
+        submodules: true
+        repository: Strategile/workflows
+        path: ./
+
     - name: Login Azure
       uses: azure/login@v3
       with:
           auth-type: SERVICE_PRINCIPAL
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Checkout Terraform repo
-      uses: actions/checkout@v4
-      with:
-        repository: Strategile/workflows
-        path: ./
-
-    - uses: hashicorp/setup-terraform@v4
+    - name: Configurando o Terraform v4
+      uses: hashicorp/setup-terraform@v4
 
     - name: Terraform Init Upgrade (${{ inputs.AppEnv }})
       working-directory: infra
