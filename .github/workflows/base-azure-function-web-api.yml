@@ -4,28 +4,32 @@ name: Base Azure Function Web Api
 on:
   workflow_call:
     inputs:
-      PROJECT:
+      Project:
         required: true
         type: string
-      APPENV:
+      AppEnv:
         required: true
         type: string
-      WORKING_DIRECTORY:
+      RootPath:
         required: true
         type: string
-      AZURE_FUNCTIONAPP_PATH:
+      OutPath:
         required: true
         type: string
-      AZURE_FUNCTIONAPP_SLOT:
-        required: true
+      DotNetVersion:
+        required: false
         type: string
-      CONFIGURATION:
-        required: true
+        default: '10.0.x'
+      Configuration:
+        required: false
         type: string
-      DOTNET_VERSION:
-        required: true
+        default: "Release"
+      FunctionSlot:
+        required: false
         type: string
-      AZURE_FUNCTIONAPP_SKU:
+        default: "Production"
+      FunctionSku:
+        required: false
         type: string
         default: "flexconsumption"
     secrets:
@@ -39,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      RESOURCE_NAME: "${{ inputs.PROJECT }}-${{ inputs.APPENV }}"
+      RESOURCE_NAME: "${{ inputs.Project }}-${{ inputs.AppEnv }}"
     
     steps:
       - name: Checkout GitHub Action
@@ -47,26 +51,26 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup .NET Core ${{ inputs.DOTNET_VERSION }}
+      - name: Setup .NET Core ${{ inputs.DotNetVersion }}
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ inputs.DOTNET_VERSION }}
+          dotnet-version: ${{ inputs.DotNetVersion }}
 
-      - name: Restore ${{ inputs.WORKING_DIRECTORY }}
-        run: dotnet restore "${{ inputs.WORKING_DIRECTORY }}"
+      - name: Restore ${{ inputs.RootPath }}
+        run: dotnet restore "${{ inputs.RootPath }}"
 
-      - name: Build And Publish ${{ inputs.WORKING_DIRECTORY }} / ${{ inputs.CONFIGURATION }} in ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
-        run: dotnet build "${{ inputs.WORKING_DIRECTORY }}" --configuration ${{ inputs.CONFIGURATION }} --output ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
+      - name: Build And Publish ${{ inputs.RootPath }} / ${{ inputs.Configuration }} in ${{ inputs.OutPath }}
+        run: dotnet build "${{ inputs.RootPath }}" --Configuration ${{ inputs.Configuration }} --output ${{ inputs.OutPath }}
 
       - name: Azure Login
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      - name: Deploy to Azure Function App ${{ inputs.PROJECT }} @ ${{ inputs.APPENV }} from ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
+      - name: Deploy to Azure Function App ${{ inputs.Project }} @ ${{ inputs.AppEnv }} from ${{ inputs.OutPath }}
         uses: Azure/functions-action@v1
         with:
           app-name: ${{ env.RESOURCE_NAME }}
-          slot-name: ${{ inputs.AZURE_FUNCTIONAPP_SLOT }}
-          package: ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
-          sku: ${{ inputs.AZURE_FUNCTIONAPP_SKU }}
+          slot-name: ${{ inputs.FunctionSlot }}
+          package: ${{ inputs.OutPath }}
+          sku: ${{ inputs.FunctionSku }}
