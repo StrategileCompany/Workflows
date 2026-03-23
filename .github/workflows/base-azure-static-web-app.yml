@@ -4,6 +4,12 @@ name: Base Azure Static Web App
 on:
   workflow_call:
     inputs:
+      PROJECT:
+        required: true
+        type: string
+      ENV:
+        required: true
+        type: string
       APP_LOCATION:
         required: true
         type: string
@@ -11,9 +17,6 @@ on:
         required: true
         type: string
       APP_ARTIFACT:
-        required: true
-        type: string
-      APP_ENVIRONMENT:
         required: true
         type: string
       IncludeFileToReplace:
@@ -50,11 +53,11 @@ jobs:
           include: ${{ inputs.APP_LOCATION }}/wwwroot/*.*
           regex: false
 
-      - name: Find '#{APPENV}' in '${{ inputs.APP_LOCATION }}/wwwroot/manifest.webmanifest' and Replace to '${{ inputs.APP_ENVIRONMENT }}'
+      - name: Find '#{APPENV}' in '${{ inputs.APP_LOCATION }}/wwwroot/manifest.webmanifest' and Replace to '${{ inputs.ENV }}'
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "#{APPENV}"
-          replace: ${{ inputs.APP_ENVIRONMENT }}
+          replace: ${{ inputs.ENV }}
           include: ${{ inputs.APP_LOCATION }}/wwwroot/manifest.webmanifest
           regex: false
 
