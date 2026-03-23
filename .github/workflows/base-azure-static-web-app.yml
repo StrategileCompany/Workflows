@@ -76,7 +76,7 @@ jobs:
         id: get-token
         run: |
           TOKEN=$(az staticwebapp secrets list --name $RESOURCE_NAME --resource-group $RG_NAME --query "properties.apiKey" -o tsv)     
-          echo "PUBLISH_TOKEN=$TOKEN" >> PUBLISH_TOKEN
+          echo "PUBLISH_TOKEN=$TOKEN" >> $GITHUB_OUTPUT
         
       - name: Build And Deploy Blazor
         uses: Azure/static-web-apps-deploy@v1
