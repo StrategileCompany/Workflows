@@ -62,7 +62,7 @@ jobs:
       run: terraform plan -out main.tfplan
       env:
         TF_VAR_Project: ${{ inputs.Project }}
-        TF_VAR_env: ${{ inputs.AppEnv }}
+        TF_VAR_AppEnv: ${{ inputs.AppEnv }}
         TF_VAR_ConnectionStringType: ${{ inputs.ConnectionStringType }}
         TF_VAR_ConnectionStringName: ${{ inputs.ConnectionStringName }}
         TF_VAR_ConnectionStringValue: ${{ secrets.ConnectionStringValue }}
