@@ -4,13 +4,16 @@ name: Base Azure Function Web Api
 on:
   workflow_call:
     inputs:
+      PROJECT:
+        required: true
+        type: string
+      APPENV:
+        required: true
+        type: string
       WORKING_DIRECTORY:
         required: true
         type: string
       AZURE_FUNCTIONAPP_PATH:
-        required: true
-        type: string
-      AZURE_FUNCTIONAPP_NAME:
         required: true
         type: string
       AZURE_FUNCTIONAPP_SLOT:
@@ -34,7 +37,10 @@ jobs:
   build-and-deploy:
     name: Build And Deploy
     runs-on: ubuntu-latest
-      
+
+    env:
+      RESOURCE_NAME: "${{ inputs.PROJECT }}-${{ inputs.APPENV }}"
+    
     steps:
       - name: Checkout GitHub Action
         uses: actions/checkout@v4
@@ -57,10 +63,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      - name: Deploy to Azure Function App ${{ inputs.AZURE_FUNCTIONAPP_NAME }} @ ${{ inputs.AZURE_FUNCTIONAPP_SLOT }} from ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
+      - name: Deploy to Azure Function App ${{ inputs.PROJECT }} @ ${{ inputs.APPENV }} from ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
         uses: Azure/functions-action@v1
         with:
-          app-name: ${{ inputs.AZURE_FUNCTIONAPP_NAME }}
+          app-name: ${{ env.RESOURCE_NAME }}
           slot-name: ${{ inputs.AZURE_FUNCTIONAPP_SLOT }}
           package: ${{ inputs.AZURE_FUNCTIONAPP_PATH }}
           sku: ${{ inputs.AZURE_FUNCTIONAPP_SKU }}
