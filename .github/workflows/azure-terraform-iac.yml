@@ -48,7 +48,8 @@ on:
 
 
 jobs:
-  terraform:
+  publish:
+    name: Publish
     runs-on: ubuntu-latest
 
     steps:
