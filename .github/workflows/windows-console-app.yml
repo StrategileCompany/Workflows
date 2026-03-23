@@ -6,29 +6,53 @@ on:
       Project:
         required: true
         type: string
+        description: "Nome do Projeto que está sendo publicado"
       AppEnv:
         required: true
         type: string
+        description: "Ambiente que será feito a publicação (DEV, HMG, STG, PRD, etc)"
       RootPath:
         required: true
         type: string
+        description: "Pasta Raiz do Projeto Console (o caminho pode ser um path relativo do repositório, i.e., src/ConsoleApp/)"
       OutPath:
         required: true
         type: string
+        description: "Pasta de saída (local onde os binários são gerados. Pode ser um caminho relativo)"
       FtpPath:
         required: true
         type: string
-      Configuration:
-        required: false
-        type: string
-        default: Release
+        description: "Path onde os Arquivos publicados serão disponibilizados no SFTP"
       DotNetVersion:
         required: false
         type: string
         default: "10.0.x"
+        description: "Versão do .net para fazer o build ('8.0.x' ou '10.0.x')"
+      Configuration:
+        required: false
+        type: string
+        default: "Release"
+        description: "Configuração do build ('Debug' ou 'Release')"
     secrets:
       FTP_CREDENTIALS:
         required: true
+        description: |
+          Json contendo as credenciais do Azure. para obter essa credencial, rode no azure o comando abaixo:
+          az ad sp create-for-rbac --name "github-actions" --role contributor --scopes /subscriptions/#subscriptionId#
+          O Azure vai retornar um Json semelhante ao abaixo
+          {
+            "appId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeffffff",
+            "displayName": "github-actions",
+            "password": "#Password+Secreta*Gerada+Automaticamente!",
+            "tenant": "ffffffff-eeee-dddd-cccc-bbbbbbaaaaaa"
+          }
+          Você precisa converter o Json retornado acima em algo conforme o json abaixo:
+          {
+            "clientId": "appId",
+            "clientSecret": "password",
+            "subscriptionId": "#subscriptionId#",
+            "tenantId": "tenant"
+          }
 
 
 jobs:
