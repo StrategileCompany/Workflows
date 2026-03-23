@@ -57,9 +57,9 @@ on:
 
 
 jobs:
-  build-and-deploy:
-    name: Build And Deploy
-    runs-on: windows-latest
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
       
     steps:
       - name: Checkout GitHub Action v6
