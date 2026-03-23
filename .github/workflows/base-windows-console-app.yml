@@ -15,18 +15,19 @@ on:
       OutPath:
         required: true
         type: string
-      Configuration:
-        required: true
-        type: string
-      DotNetVersion:
-        required: true
-        type: string
-        default: "10.0.x"
       FtpPath:
         required: true
         type: string
+      Configuration:
+        required: false
+        type: string
+        default: Release
+      DotNetVersion:
+        required: false
+        type: string
+        default: "10.0.x"
     secrets:
-      FTP_PWD:
+      FTP_CREDENTIALS:
         required: true
 
 
@@ -72,6 +73,6 @@ jobs:
         shell: powershell
         run: |
           . .\upload\upload-to-ftp.ps1
-          Ftp-Deploy "${{ secrets.FTP_PWD }}" "${{ inputs.FtpPath }}" "Config.zip"
-          Ftp-Deploy "${{ secrets.FTP_PWD }}" "${{ inputs.FtpPath }}" "${{ inputs.Project }}.SyncDataApp.zip"
+          Ftp-Deploy "${{ secrets.FTP_CREDENTIALS }}" "${{ inputs.FtpPath }}" "Config.zip"
+          Ftp-Deploy "${{ secrets.FTP_CREDENTIALS }}" "${{ inputs.FtpPath }}" "${{ inputs.Project }}.SyncDataApp.zip"
 
