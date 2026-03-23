@@ -25,7 +25,9 @@ on:
       IncludeFileToReplace:
         required: true
         type: string
-
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
 
 jobs:
   build-and-deploy:
@@ -65,6 +67,11 @@ jobs:
           include: ${{ inputs.APP_LOCATION }}/wwwroot/manifest.webmanifest
           regex: false
       
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Obtendo o PUBLISH_TOKEN do StaticWebApp
         id: get-token
         run: |
