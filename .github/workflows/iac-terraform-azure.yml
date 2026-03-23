@@ -16,15 +16,7 @@ on:
         required: true
         type: string
     secrets:
-      AZURE_CLIENT_ID:
-        required: true
-      AZURE_CLIENT_SECRET:
-        required: true
-      AZURE_SUBSCRIPTION_ID:
-        required: true
-      AZURE_TENANT_ID:
-        required: true
-      INFRA_CONNECTION_STRING_VALUE:
+      AZURE_CREDENTIALS:
         required: true
       GH_TOKEN:
         required: true
@@ -39,13 +31,7 @@ jobs:
       uses: azure/login@v2
       with:
           auth-type: SERVICE_PRINCIPAL
-          creds: |
-            {
-              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
-              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
-              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
-              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
-            }
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Checkout Terraform repo
       uses: actions/checkout@v4
