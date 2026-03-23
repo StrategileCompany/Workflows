@@ -6,19 +6,19 @@ on:
       PROJECT:
         required: true
         type: string
-      ENV:
+      APPENV:
         required: true
         type: string
-      INFRA_CONNECTION_STRING_TYPE:
+      API_CONNECTION_STRING_TYPE:
         required: true
         type: string
-      INFRA_CONNECTION_STRING_NAME:
+      API_CONNECTION_STRING_NAME:
         required: true
         type: string
     secrets:
       AZURE_CREDENTIALS:
         required: true
-      INFRA_CONNECTION_STRING_VALUE:
+      API_CONNECTION_STRING_VALUE:
         required: true
       GH_TOKEN:
         required: true
@@ -43,55 +43,45 @@ jobs:
 
     - uses: hashicorp/setup-terraform@v4
 
-    - name: Terraform Init Upgrade (${{ inputs.ENV }})
+    - name: Terraform Init Upgrade (${{ inputs.APPENV }})
       working-directory: infra
       run: terraform init -upgrade
 
-    - name: Terraform Workspace (${{ inputs.PROJECT }}-${{ inputs.ENV }})
+    - name: Terraform Workspace (${{ inputs.PROJECT }}-${{ inputs.APPENV }})
       working-directory: infra
       run: terraform workspace select -or-create $WORKSPACE
       env:
-         WORKSPACE: "${{ inputs.PROJECT }}-${{ inputs.ENV }}"
+         WORKSPACE: "${{ inputs.PROJECT }}-${{ inputs.APPENV }}"
 
-    - name: Terraform Validate (${{ inputs.ENV }})
+    - name: Terraform Validate (${{ inputs.APPENV }})
       working-directory: infra
       run: terraform validate
 
-    - name: Terraform Plan (${{ inputs.ENV }})
+    - name: Terraform Plan (${{ inputs.APPENV }})
       working-directory: infra
       run: terraform plan -out main.tfplan
       env:
         TF_VAR_project: ${{ inputs.PROJECT }}
-        TF_VAR_env: ${{ inputs.ENV }}
-        TF_VAR_ConnectionStringType: ${{ inputs.INFRA_CONNECTION_STRING_TYPE }}
-        TF_VAR_ConnectionStringName: ${{ inputs.INFRA_CONNECTION_STRING_NAME }}
-        TF_VAR_ConnectionStringValue: ${{ secrets.INFRA_CONNECTION_STRING_VALUE }}
+        TF_VAR_env: ${{ inputs.APPENV }}
+        TF_VAR_ConnectionStringType: ${{ inputs.API_CONNECTION_STRING_TYPE }}
+        TF_VAR_ConnectionStringName: ${{ inputs.API_CONNECTION_STRING_NAME }}
+        TF_VAR_ConnectionStringValue: ${{ secrets.API_CONNECTION_STRING_VALUE }}
 
-    - name: Terraform Apply (${{ inputs.ENV }})
+    - name: Terraform Apply (${{ inputs.APPENV }})
       working-directory: infra
       run: terraform apply -auto-approve -input=false main.tfplan
 
-    - name: Save GitHub Secrets (${{ inputs.ENV }}) from Terraform Outputs (${{ inputs.ENV }})
+    - name: Save GitHub Secrets (${{ inputs.APPENV }}) from Terraform Outputs (${{ inputs.APPENV }})
       working-directory: infra
       run: |
-        SECRET_NAME1="${{ inputs.ENV }}_LANDING_PAGE_DEPLOY_TOKEN"
+        SECRET_NAME1="${{ inputs.APPENV }}_LANDING_PAGE_DEPLOY_TOKEN"
         SECRET_VALUE1=$(terraform output -raw landing_page_deployment_token)
 
-        SECRET_NAME2="${{ inputs.ENV }}_BLAZOR_WEBAPP_DEPLOY_TOKEN"
+        SECRET_NAME2="${{ inputs.APPENV }}_BLAZOR_WEBAPP_DEPLOY_TOKEN"
         SECRET_VALUE2=$(terraform output -raw blazor_webapp_deployment_token)
-
-        SECRET_NAME3="${{ inputs.ENV }}_FUNCTION_API_DEPLOY_TOKEN"
-        SECRET_VALUE3="SecretPrecisaSerConfiguradoManualmenteParaConsumoFlex"
 
         gh secret set $SECRET_NAME1 --repo ${{ github.repository }} --body $SECRET_VALUE1
         gh secret set $SECRET_NAME2 --repo ${{ github.repository }} --body $SECRET_VALUE2
-
-        if gh secret list --repo ${{ github.repository }} | awk '{print $1}' | grep -Fxq "$SECRET_NAME3"; then
-          echo "Secret $SECRET_NAME3 já existe. Nada a fazer 👍"
-        else
-          echo "Criando secret $SECRET_NAME3..."
-          gh secret set $SECRET_NAME3 --repo ${{ github.repository }} --body $SECRET_VALUE3
-        fi
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
