@@ -1,4 +1,5 @@
-name: Base Windows Console App
+name: Windows Console App
+
 
 on:
   workflow_call:
