@@ -1,4 +1,5 @@
-name: Base Infra
+name: Azure Terraform IaC
+
 
 on:
   workflow_call:
@@ -24,6 +25,7 @@ on:
     secrets:
       ConnectionStringValue:
         required: true
+        description: "ConnectionString com o Banco de dados"
       AZURE_CREDENTIALS:
         required: true
         description: |
