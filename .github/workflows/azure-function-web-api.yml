@@ -85,7 +85,7 @@ jobs:
         run: dotnet restore "${{ inputs.RootPath }}"
 
       - name: Build And Publish ${{ inputs.RootPath }} / ${{ inputs.Configuration }} in ${{ inputs.OutPath }}
-        run: dotnet build "${{ inputs.RootPath }}" --configuration "${{ inputs.Configuration }}" --output "${{ inputs.OutPath }}"
+        run: dotnet build "${{ inputs.RootPath }}" --configuration ${{ inputs.Configuration }} --output ${{ inputs.OutPath }}
 
       - name: Azure Login
         uses: azure/login@v3
