@@ -32,6 +32,12 @@ variable "AppEnv" {
   description = "Ambiente (HMG ou PRD)"
 }
 
+variable "DotNetVersion" {
+  type        = string
+  description = "Versão do Runtime do Dotnet"
+  default     = "10.0"
+}
+
 variable "ConnectionStringType" {
   type        = string
   description = "Default Connection String Type"
@@ -53,13 +59,7 @@ variable "ConnectionStringValue" {
 
 
 locals {
-  location1         = "East US"
-  location2         = "East US 2"
-
-  Project           = var.Project
-  AppEnv            = var.AppEnv
-
-  prefix            = "${local.Project}-${local.AppEnv}"
+  prefix            = "${var.Project}-${var.AppEnv}"
   resource_group    = "RG-${local.prefix}"
   landing_page      = "${local.prefix}-landing"
   blazor_webapp     = "${local.prefix}-webapp"
@@ -69,6 +69,8 @@ locals {
   app_insights      = "${local.prefix}"
   service_plan      = "${local.prefix}"
   function_app      = "${local.prefix}"
+  location1         = "East US"
+  location2         = "East US 2"
 }
 
 
@@ -189,7 +191,7 @@ resource "azurerm_function_app_flex_consumption" "main" {
   storage_authentication_type= "StorageAccountConnectionString"
   storage_access_key         = azurerm_storage_account.main.primary_access_key
   runtime_name               = "dotnet-isolated"
-  runtime_version            = "10.0"
+  runtime_version            = var.DotNetVersion
   maximum_instance_count     = 50
   instance_memory_in_mb      = 4096
 
