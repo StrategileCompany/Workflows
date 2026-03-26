@@ -32,6 +32,12 @@ variable "AppEnv" {
   description = "Ambiente (HMG ou PRD)"
 }
 
+variable "CreateResourceLP" {
+  type        = bool
+  description = "Indica se vai ser Criado um Recurso para a LandingPage"
+  default     = null
+}
+
 variable "DotNetVersion" {
   type        = string
   description = "Versão do Runtime do Dotnet"
@@ -59,6 +65,7 @@ variable "ConnectionStringValue" {
 
 
 locals {
+  CreateResourceLP  = (var.CreateResourceLP != null) ? var.CreateResourceLP : var.AppEnv == "PRD"
   prefix            = "${var.Project}-${var.AppEnv}"
   resource_group    = "RG-${local.prefix}"
   landing_page      = "${local.prefix}-landing"
@@ -83,6 +90,8 @@ resource "azurerm_resource_group" "main" {
 
 
 resource "azurerm_static_web_app" "landing_page" {
+  count                      = local.CreateResourceLP ? 1 : 0
+
   name                       = local.landing_page
   resource_group_name        = azurerm_resource_group.main.name
   location                   = local.location2
@@ -113,22 +122,6 @@ resource "azurerm_static_web_app" "blazor_webapp" {
     ]
   }
 }
-
-
-
-#resource "azurerm_static_web_app_custom_domain" "lp" {
-#  static_web_app_id          = azurerm_static_web_app.landing_page.id
-#  domain_name                = local.lp_custom_domain
-#  validation_type            = "cname-delegation"
-#}
-
-
-
-#resource "azurerm_static_web_app_custom_domain" "app" {
-#  static_web_app_id          = azurerm_static_web_app.blazor_webapp.id
-#  domain_name                = local.app_custom_domain
-#  validation_type            = "cname-delegation"
-#}
 
 
 
