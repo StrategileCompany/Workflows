@@ -69,7 +69,7 @@ locals {
   prefix            = "${var.Project}-${var.AppEnv}"
   resource_group    = "RG-${local.prefix}"
   landing_page      = "${local.prefix}-landing"
-  blazor_webapp     = "${local.prefix}-webapp"
+  blazor_webapp     = "${local.prefix}"
   storage_account   = lower(replace(local.prefix, "-", "4"))
   storage_container = lower(local.prefix)
   log_analytics     = "${local.prefix}"
