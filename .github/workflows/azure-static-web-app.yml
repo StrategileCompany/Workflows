@@ -61,7 +61,7 @@ jobs:
 
     env:
       RG_NAME: "RG-${{ inputs.Project }}-${{ inputs.AppEnv }}"
-      RESOURCE_NAME: "${{ inputs.Project }}-${{ inputs.AppEnv }}-${{ inputs.AppType }}"
+      RESOURCE_NAME: "${{ inputs.Project }}-${{ inputs.AppEnv }}${{ inputs.AppType }}"
 
     steps:
       - name: Checkout GitHub Action v6
