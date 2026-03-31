@@ -60,8 +60,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      RG_NAME: "RG-${{ inputs.Project }}-${{ inputs.AppEnv }}"
-      RESOURCE_NAME: "${{ inputs.Project }}-${{ inputs.AppEnv }}${{ inputs.AppType }}"
+      ResourceGroup: "RG-${{ inputs.Project }}-${{ inputs.AppEnv }}"
+      ResourceName: "${{ inputs.Project }}-${{ inputs.AppEnv }}${{ inputs.AppType }}"
+      SufixAppName: ${{ inputs.AppEnv == 'PRD' && 'App' || inputs.AppEnv }}
 
     steps:
       - name: Checkout GitHub Action v6
@@ -85,11 +86,11 @@ jobs:
           include: ${{ inputs.RootPath }}/wwwroot/*.*
           regex: false
 
-      - name: Find '#{AppEnv}' in '${{ inputs.RootPath }}/wwwroot/manifest.webmanifest' and Replace to '${{ inputs.AppEnv }}'
+      - name: Find '#{APPENV}' in '${{ inputs.RootPath }}/wwwroot/manifest.webmanifest' and Replace to '${{ env.SufixAppName }}'
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "#{APPENV}"
-          replace: ${{ inputs.AppEnv }}
+          replace: ${{ env.SufixAppName }}
           include: ${{ inputs.RootPath }}/wwwroot/manifest.webmanifest
           regex: false
       
@@ -101,7 +102,7 @@ jobs:
       - name: Obtendo o PUBLISH_TOKEN do StaticWebApp
         id: get-token
         run: |
-          TOKEN=$(az staticwebapp secrets list --name $RESOURCE_NAME --resource-group $RG_NAME --query "properties.apiKey" -o tsv)     
+          TOKEN=$(az staticwebapp secrets list --name $ResourceName --resource-group $ResourceGroup --query "properties.apiKey" -o tsv)     
           echo "PUBLISH_TOKEN=$TOKEN" >> $GITHUB_OUTPUT
         
       - name: Build And Deploy Blazor
