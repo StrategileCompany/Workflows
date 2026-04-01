@@ -62,7 +62,7 @@ jobs:
     env:
       ResourceGroup: "RG-${{ inputs.Project }}-${{ inputs.AppEnv }}"
       ResourceName: "${{ inputs.Project }}-${{ inputs.AppEnv }}${{ inputs.AppType }}"
-      SufixAppName: ${{ inputs.AppEnv == 'PRD' && 'App' || inputs.AppEnv }}
+      SufixAppName: ${{ inputs.AppEnv == 'PRD' && '' || inputs.AppEnv }}
 
     steps:
       - name: Checkout GitHub Action v6
