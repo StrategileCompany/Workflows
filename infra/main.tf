@@ -149,6 +149,7 @@ resource "azurerm_log_analytics_workspace" "main" {
   location                   = local.location1
   sku                        = "PerGB2018"
   retention_in_days          = 30
+  daily_quota_gb             = 0.025
 }
 
 
