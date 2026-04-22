@@ -81,7 +81,7 @@ jobs:
 
     - name: Terraform Init Upgrade (${{ inputs.AppEnv }})
       working-directory: infra
-      run: terraform init -upgrade
+      run: terraform init -upgrade -backend-config="storage_account_name=${{ inputs.StorageAccountName }}"
 
     - name: Terraform Workspace (${{ inputs.Project }}-${{ inputs.AppEnv }})
       working-directory: infra
@@ -102,7 +102,6 @@ jobs:
         TF_VAR_DotNetVersion: ${{ inputs.DotNetVersion }}
         TF_VAR_ConnectionStringType: ${{ inputs.ConnectionStringType }}
         TF_VAR_ConnectionStringName: ${{ inputs.ConnectionStringName }}
-        TF_VAR_StorageAccountName: ${{ inputs.StorageAccountName }}
         TF_VAR_ConnectionStringValue: ${{ secrets.ConnectionStringValue }}
 
     - name: Terraform Apply (${{ inputs.AppEnv }})
