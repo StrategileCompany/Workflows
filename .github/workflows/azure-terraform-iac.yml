@@ -27,6 +27,11 @@ on:
         type: string
         default: "10.0"
         description: "Versão do Runtime do net para criação da Azure Function ('8.0' ou '10.0')"
+      StorageAccountName:
+        required: false
+        type: string
+        default: "gh4ctions7erraform5tate"
+        description: "Storage Account Name para gravar o Teraform State"
     secrets:
       ConnectionStringValue:
         required: true
@@ -97,6 +102,7 @@ jobs:
         TF_VAR_DotNetVersion: ${{ inputs.DotNetVersion }}
         TF_VAR_ConnectionStringType: ${{ inputs.ConnectionStringType }}
         TF_VAR_ConnectionStringName: ${{ inputs.ConnectionStringName }}
+        TF_VAR_StorageAccountName: ${{ inputs.StorageAccountName }}
         TF_VAR_ConnectionStringValue: ${{ secrets.ConnectionStringValue }}
 
     - name: Terraform Apply (${{ inputs.AppEnv }})
