@@ -1,3 +1,9 @@
+variable "StorageAccountName" {
+  type        = string
+  description = "Storage Account Name"
+  default     = "gh4ctions7erraform5tate"
+}
+
 terraform {
   required_version = ">= 1.5"
 
@@ -10,7 +16,7 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "RG-Terraform-State"
-    storage_account_name = "gh4ctions7erraform5tate"
+    storage_account_name = var.StorageAccountName
     container_name       = "terraform-state"
     key                  = "infra.tfstate"
   }
