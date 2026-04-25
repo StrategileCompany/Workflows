@@ -35,13 +35,25 @@ on:
       TF_StorageAccountName:
         required: false
         type: string
-        default: "gh4ctions7erraform5tate"
+        default: "tf2gha4suaempresa"
         description: "Storage Account Name para gravar o Teraform State"
       TF_ContainerName:
         required: false
         type: string
         default: "terraform-state"
-        description: "Container Name do Storage Account para gravar o Teraform State"
+        description: |
+          Container Name do Storage Account para gravar o Teraform State
+          # Para usar o Terraform de maneira eficaz, precisamos de um repositório para guardar o state entre o Plan e o Apply (ou entre uma execução e outra).
+          # Como já estamos usando o Microsoft Azure, optamos em salvar o state do Terraform no Container do Storage Account, que pode ser criado manualmente. 
+          # Sugestão de nomes pro Storage Account: { ResourceGroup: "RG-Terraform-State", StorageAccount: "tf2gha4suaempresa", Container: "terraform-state" }
+          # Ou você pode automatizar executando o script abaixo (as 3 linhas começando com az), que deve ser executado em um terminal dentro do próprio Azure. 
+          # Essas informações são usadas entro do arquivo infra/main.tf, na seção "backend", mas são configuados aqui neste arquivo ao fazer o terraform init.
+          # Essas configurações podem ser definidas na chamada da pipeline através dos inputs: TF_ResourceGroupName, TF_StorageAccountName e TF_ContainerName.
+
+          az group             create --name RG-Terraform-State                                    --location eastus
+          az storage account   create --name tf2gha4strategile --resource-group RG-Terraform-State --location eastus --sku Standard_LRS
+          az storage container create --name terraform-state   --account-name   tf2gha4strategile
+
     secrets:
       ConnectionStringValue:
         required: true
