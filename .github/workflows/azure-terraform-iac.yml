@@ -27,11 +27,21 @@ on:
         type: string
         default: "10.0"
         description: "Versão do Runtime do net para criação da Azure Function ('8.0' ou '10.0')"
-      StorageAccountName:
+      TF_ResourceGroupName:
+        required: false
+        type: string
+        default: "RG-Terraform-State"
+        description: "Resource Group do Storage Account para gravar o Teraform State"
+      TF_StorageAccountName:
         required: false
         type: string
         default: "gh4ctions7erraform5tate"
         description: "Storage Account Name para gravar o Teraform State"
+      TF_ContainerName:
+        required: false
+        type: string
+        default: "terraform-state"
+        description: "Container Name do Storage Account para gravar o Teraform State"
     secrets:
       ConnectionStringValue:
         required: true
@@ -81,7 +91,12 @@ jobs:
 
     - name: Terraform Init Upgrade (${{ inputs.AppEnv }})
       working-directory: infra
-      run: terraform init -upgrade -backend-config="storage_account_name=${{ inputs.StorageAccountName }}"
+      run: |
+        terraform init -upgrade \
+          -backend-config="resource_group_name=${{ inputs.TF_ResourceGroupName }}" \
+          -backend-config="storage_account_name=${{ inputs.TF_StorageAccountName }}" \
+          -backend-config="container_name=${{ inputs.TF_ContainerName }}" \
+          -backend-config="key=infra.tfstate"
 
     - name: Terraform Workspace (${{ inputs.Project }}-${{ inputs.AppEnv }})
       working-directory: infra
