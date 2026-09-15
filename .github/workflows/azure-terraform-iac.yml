@@ -12,6 +12,14 @@ on:
         required: true
         type: string
         description: "Ambiente que será feito a publicação (DEV, HMG, STG, PRD, etc)"
+      Enabled:
+        required: false
+        type: boolean
+        default: true
+        description: |
+          false pula o Terraform (init/plan/apply) mantendo o job verde, para os jobs que dependem dele
+          seguirem normalmente. Use quando o deploy e so de aplicacao e a infra nao mudou.
+          O padrao e true: quem nao passar nada continua rodando o Terraform como sempre.
       ConnectionStringType:
         required: false
         type: string
@@ -100,7 +108,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Terraform desabilitado (Enabled = false)
+      if: ${{ !inputs.Enabled }}
+      run: echo "Terraform pulado a pedido do chamador (Enabled = false). Nenhuma alteracao de infra foi aplicada."
+
     - name: Checkout GitHub Action v6
+      if: ${{ inputs.Enabled }}
       uses: actions/checkout@v6
       with:
         submodules: true
@@ -108,15 +121,18 @@ jobs:
         path: ./
 
     - name: Login Azure
+      if: ${{ inputs.Enabled }}
       uses: azure/login@v3
       with:
           auth-type: SERVICE_PRINCIPAL
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Configurando o Terraform v4
+      if: ${{ inputs.Enabled }}
       uses: hashicorp/setup-terraform@v4
 
     - name: Terraform Init Upgrade (${{ inputs.AppEnv }})
+      if: ${{ inputs.Enabled }}
       working-directory: infra
       run: |
         terraform init -upgrade \
@@ -126,16 +142,19 @@ jobs:
           -backend-config="key=infra.tfstate"
 
     - name: Terraform Workspace (${{ inputs.Project }}-${{ inputs.AppEnv }})
+      if: ${{ inputs.Enabled }}
       working-directory: infra
       run: terraform workspace select -or-create $WORKSPACE
       env:
          WORKSPACE: "${{ inputs.Project }}-${{ inputs.AppEnv }}"
 
     - name: Terraform Validate (${{ inputs.AppEnv }})
+      if: ${{ inputs.Enabled }}
       working-directory: infra
       run: terraform validate
 
     - name: Terraform Plan (${{ inputs.AppEnv }})
+      if: ${{ inputs.Enabled }}
       working-directory: infra
       env:
         TF_VAR_Project: ${{ inputs.Project }}
@@ -150,6 +169,7 @@ jobs:
       run: terraform plan -out main.tfplan
 
     - name: Terraform Apply (${{ inputs.AppEnv }})
+      if: ${{ inputs.Enabled }}
       working-directory: infra
       run: terraform apply -auto-approve -input=false main.tfplan
 
