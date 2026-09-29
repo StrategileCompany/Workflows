@@ -89,6 +89,18 @@ variable "CustomDomainVerified" {       # nova flag, default false
   default = false
 }
 
+variable "StaticWebAppSku" {
+  # Sem default de propósito: o valor padrão vive no input StaticWebAppSku do workflow,
+  # para haver uma única fonte da verdade.
+  type        = string
+  description = "Plano (SKU) dos Static Web Apps: Free (gratuito, limitado a 10 por assinatura) ou Standard (pago)."
+
+  validation {
+    condition     = contains(["Free", "Standard"], var.StaticWebAppSku)
+    error_message = "StaticWebAppSku deve ser Free ou Standard (exatamente assim, com a inicial maiúscula)."
+  }
+}
+
 
 
 locals {
@@ -198,8 +210,8 @@ resource "azurerm_static_web_app" "landing_page" {
   name                       = local.landing_page
   resource_group_name        = azurerm_resource_group.main.name
   location                   = local.location2
-  sku_tier                   = "Free"
-  sku_size                   = "Free"
+  sku_tier                   = var.StaticWebAppSku
+  sku_size                   = var.StaticWebAppSku
 
   lifecycle {
     ignore_changes = [
@@ -215,8 +227,8 @@ resource "azurerm_static_web_app" "blazor_webapp" {
   name                       = local.blazor_webapp
   resource_group_name        = azurerm_resource_group.main.name
   location                   = local.location2
-  sku_tier                   = "Free"
-  sku_size                   = "Free"
+  sku_tier                   = var.StaticWebAppSku
+  sku_size                   = var.StaticWebAppSku
 
   lifecycle {
     ignore_changes = [

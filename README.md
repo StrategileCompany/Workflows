@@ -89,6 +89,7 @@ Quando só a aplicação mudou e a infra está estável, passe `Enabled: false` 
 | `CreateResourceACS` | não | `false` | Cria os recursos de e-mail (Azure Communication Services). |
 | `CustomDomain` | não | `""` | Domínio próprio de envio. Vazio ou com menos de 4 caracteres = só o domínio gerenciado do Azure. |
 | `CustomDomainVerified` | não | `false` | Só `true` depois de verificar o domínio no Azure; cria o vínculo domínio↔ACS. |
+| `StaticWebAppSku` | não | `Free` | Plano dos Static Web Apps: `Free` (limitado a 10 por assinatura) ou `Standard` (pago). |
 | `TF_ResourceGroupName` | não | `RG-Terraform-State` | RG do Storage Account do state. |
 | `TF_StorageAccountName` | não | `tf2gha4suaempresa` | Storage Account do state. |
 | `TF_ContainerName` | não | `terraform-state` | Container do state. |
@@ -150,7 +151,7 @@ Recursos criados por ambiente:
 - Storage Account + container privado (usados pela Function Flex Consumption)
 - Log Analytics Workspace (30 dias, cota diária de 0,025 GB) e Application Insights
 - Service Plan `FC1` (Linux) e Function App Flex Consumption `dotnet-isolated`, com CORS liberado, a connection string informada e `APPLICATIONINSIGHTS_CONNECTION_STRING`
-- Static Web App do webapp (Free) e, em `PRD` — ou quando `CreateResourceLP` for `true` —, o Static Web App da landing page
+- Static Web App do webapp e, em `PRD` — ou quando `CreateResourceLP` for `true` —, o Static Web App da landing page; ambos no plano definido por `StaticWebAppSku` (`Free` por padrão)
 - Opcionalmente (`CreateResourceACS = true`): Communication Service, Email Communication Service, domínio gerenciado do Azure e respectiva associação; quando `CustomDomain` tem ao menos 4 caracteres, também o domínio próprio e o remetente `noreply`
 
 Outputs:

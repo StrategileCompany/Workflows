@@ -50,6 +50,11 @@ on:
         type: boolean
         default: false
         description: "true SÓ após verificar o domínio próprio no Azure (DNS publicado). Cria o link domínio<->ACS, que falha enquanto não verificado."
+      StaticWebAppSku:
+        required: false
+        type: string
+        default: "Free"
+        description: "Plano (SKU) dos Static Web Apps: 'Free' (gratuito, limitado a 10 por assinatura Azure) ou 'Standard' (pago). Use 'Standard' quando a cota de gratuitos estiver esgotada."
       TF_ResourceGroupName:
         required: false
         type: string
@@ -166,6 +171,7 @@ jobs:
         TF_VAR_CreateResourceACS: ${{ inputs.CreateResourceACS }}
         TF_VAR_CustomDomain: ${{ inputs.CustomDomain }}
         TF_VAR_CustomDomainVerified: ${{ inputs.CustomDomainVerified }}
+        TF_VAR_StaticWebAppSku: ${{ inputs.StaticWebAppSku }}
       run: terraform plan -out main.tfplan
 
     - name: Terraform Apply (${{ inputs.AppEnv }})
