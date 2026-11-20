@@ -90,6 +90,8 @@ Quando só a aplicação mudou e a infra está estável, passe `Enabled: false` 
 | `CustomDomain` | não | `""` | Domínio próprio de envio. Vazio ou com menos de 4 caracteres = só o domínio gerenciado do Azure. |
 | `CustomDomainVerified` | não | `false` | Só `true` depois de verificar o domínio no Azure; cria o vínculo domínio↔ACS. |
 | `StaticWebAppSku` | não | `Free` | Plano dos Static Web Apps: `Free` (limitado a 10 por assinatura) ou `Standard` (pago). |
+| `LogDailyQuotaGb` | não | `0.025` | Cota diária de ingestão do Log Analytics em GB (`-1` = sem cota). 25 MB estourou em ~35 min no Strategile e deixava a telemetria cega o resto do dia. |
+| `PlanOnly` | não | `false` | `true` roda init/validate/plan e para antes do apply, para revisar o plano antes de aplicar. |
 | `TF_ResourceGroupName` | não | `RG-Terraform-State` | RG do Storage Account do state. |
 | `TF_StorageAccountName` | não | `tf2gha4suaempresa` | Storage Account do state. |
 | `TF_ContainerName` | não | `terraform-state` | Container do state. |
