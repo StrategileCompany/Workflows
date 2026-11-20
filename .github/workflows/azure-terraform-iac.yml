@@ -192,6 +192,6 @@ jobs:
 
     - name: Apply pulado (PlanOnly = true)
       if: ${{ inputs.Enabled && inputs.PlanOnly }}
-      run: echo "PlanOnly = true: o plano acima NAO foi aplicado. Revise e rode de novo sem PlanOnly para aplicar."
+      run: echo "PlanOnly = true, entao o plano acima NAO foi aplicado. Revise e rode de novo sem PlanOnly para aplicar."
 
 
