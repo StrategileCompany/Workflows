@@ -55,6 +55,16 @@ on:
         type: string
         default: "Free"
         description: "Plano (SKU) dos Static Web Apps: 'Free' (gratuito, limitado a 10 por assinatura Azure) ou 'Standard' (pago). Use 'Standard' quando a cota de gratuitos estiver esgotada."
+      LogDailyQuotaGb:
+        required: false
+        type: number
+        default: 0.025
+        description: "Cota diaria de ingestao do Log Analytics em GB (-1 = sem cota). O default e o valor que era fixo no main.tf. Cota pequena estoura cedo e deixa a telemetria (e qualquer alerta por log) cega o resto do dia."
+      PlanOnly:
+        required: false
+        type: boolean
+        default: false
+        description: "true roda init, validate e plan e PARA antes do apply: para revisar o que o Terraform vai mudar antes de aplicar de verdade."
       TF_ResourceGroupName:
         required: false
         type: string
@@ -172,11 +182,16 @@ jobs:
         TF_VAR_CustomDomain: ${{ inputs.CustomDomain }}
         TF_VAR_CustomDomainVerified: ${{ inputs.CustomDomainVerified }}
         TF_VAR_StaticWebAppSku: ${{ inputs.StaticWebAppSku }}
+        TF_VAR_LogDailyQuotaGb: ${{ inputs.LogDailyQuotaGb }}
       run: terraform plan -out main.tfplan
 
     - name: Terraform Apply (${{ inputs.AppEnv }})
-      if: ${{ inputs.Enabled }}
+      if: ${{ inputs.Enabled && !inputs.PlanOnly }}
       working-directory: infra
       run: terraform apply -auto-approve -input=false main.tfplan
+
+    - name: Apply pulado (PlanOnly = true)
+      if: ${{ inputs.Enabled && inputs.PlanOnly }}
+      run: echo "PlanOnly = true: o plano acima NAO foi aplicado. Revise e rode de novo sem PlanOnly para aplicar."
 
 

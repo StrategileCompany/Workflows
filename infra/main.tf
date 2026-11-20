@@ -101,6 +101,15 @@ variable "StaticWebAppSku" {
   }
 }
 
+variable "LogDailyQuotaGb" {
+  # O default (0,025 GB = 25 MB/dia) e o valor que existia fixo aqui. No Strategile, em 20/11/2026, ele estourava
+  # em ~35 minutos depois do reset (14h UTC) e a telemetria ficava cega o resto do dia: alerta por log nao ve nada.
+  # Quem precisa do dia inteiro passa um valor maior (o Strategile passa 0.3, com a telemetria enxugada).
+  type        = number
+  description = "Cota diaria de ingestao do Log Analytics em GB. -1 = sem cota."
+  default     = 0.025
+}
+
 
 
 locals {
@@ -264,7 +273,7 @@ resource "azurerm_log_analytics_workspace" "main" {
   location                   = local.location1
   sku                        = "PerGB2018"
   retention_in_days          = 30
-  daily_quota_gb             = 0.025
+  daily_quota_gb             = var.LogDailyQuotaGb
 }
 
 
